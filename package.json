@@ -41,7 +41,7 @@
   },
   "peerDependencies": {
     "eslint": "^9.10.0",
-    "vitest": "^1.0.0 || ^2.0.0 || ^3.0.0"
+    "vitest": "^1.0.0 || ^2.0.0 || ^3.0.0 || ^4.0.0"
   },
   "dependencies": {
     "@typescript-eslint/utils": "^8.46.1"
@@ -62,7 +62,7 @@
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vite": "^7.1.10",
-    "vitest": "^3.2.4"
+    "vitest": "^4.0.5"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"
