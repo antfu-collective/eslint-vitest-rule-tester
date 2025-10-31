@@ -41,7 +41,7 @@
   },
   "peerDependencies": {
     "eslint": "^9.10.0",
-    "vitest": "^1.0.0 || ^2.0.0 || ^3.0.0"
+    "vitest": "^1.0.0 || ^2.0.0 || ^3.0.0 || ^4.0.0"
   },
   "dependencies": {
     "@typescript-eslint/utils": "^8.46.1"
