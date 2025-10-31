@@ -19,15 +19,18 @@ export function normalizeTestCase<RuleOptions = any, MessageId extends string = 
   const normalized = obj as NormalizedTestCase<RuleOptions, MessageId>
   normalized.type ||= type || (('errors' in obj || 'output' in obj) ? 'invalid' : 'valid')
 
+  const parserOptions: Linter.ParserOptions = {
+    // @ts-expect-error legacy type
+    ...languageOptions?.parserOptions,
+    ...normalized.parserOptions,
+    ...normalized.languageOptions?.parserOptions || {},
+  }
+
   const merged: Linter.Config['languageOptions'] = {
     ...languageOptions,
     ...normalized.languageOptions,
     parser: normalized.languageOptions?.parser ?? normalized.parser ?? languageOptions?.parser,
-    parserOptions: {
-      ...languageOptions?.parserOptions,
-      ...normalized.parserOptions,
-      ...normalized.languageOptions?.parserOptions,
-    },
+    parserOptions,
   }
 
   if (isUsingTypeScriptParser(merged)) {
@@ -38,7 +41,7 @@ export function normalizeTestCase<RuleOptions = any, MessageId extends string = 
       ecmaVersion: 'latest',
       sourceType: 'module',
       disallowAutomaticSingleRunInference: true,
-      ...merged.parserOptions,
+      ...parserOptions,
     }
   }
   else {
@@ -72,20 +75,20 @@ export function normalizeCaseError<MessageId extends string = string>(error: Tes
 }
 
 function getDefaultJavaScriptFilename(
-  languageOptions: Linter.Config['languageOptions'],
+  parserOptions: Linter.ParserOptions,
   defaultFilenames: DefaultFilenames,
 ) {
-  return languageOptions?.parserOptions?.ecmaFeatures?.jsx
+  return parserOptions?.ecmaFeatures?.jsx
     ? defaultFilenames.jsx
     : defaultFilenames.js
 }
 
 function getDefaultTypeScriptFilename(
-  languageOptions: Linter.Config['languageOptions'],
+  LanguageOptions: Linter.LanguageOptions,
   defaultFilenames: DefaultFilenames,
 ) {
-  const rootPath = (isUsingTypeScriptTypings(languageOptions)
-    ? languageOptions?.parserOptions?.tsconfigRootDir
+  const rootPath = (isUsingTypeScriptTypings(LanguageOptions)
+    ? LanguageOptions?.parserOptions?.tsconfigRootDir
     : undefined)
   /*
      * Can we do better than cwd?
@@ -95,18 +98,18 @@ function getDefaultTypeScriptFilename(
      */
   ?? process.cwd()
 
-  const filename = languageOptions?.parserOptions?.ecmaFeatures?.jsx
+  const filename = LanguageOptions?.parserOptions?.ecmaFeatures?.jsx
     ? defaultFilenames.tsx
     : defaultFilenames.ts
 
   return path.join(rootPath, filename)
 }
 
-export function isUsingTypeScriptParser(languageOptions: Linter.Config['languageOptions']): boolean {
+export function isUsingTypeScriptParser(languageOptions: Linter.LanguageOptions): boolean {
   return languageOptions?.parser?.meta?.name === 'typescript-eslint/parser'
 }
 
-export function isUsingTypeScriptTypings(languageOptions: Linter.Config['languageOptions']): boolean {
+export function isUsingTypeScriptTypings(languageOptions: Linter.LanguageOptions): boolean {
   return languageOptions?.parserOptions?.program
     || languageOptions?.parserOptions?.project
     || languageOptions?.parserOptions?.projectService

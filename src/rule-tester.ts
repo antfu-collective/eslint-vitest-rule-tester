@@ -24,11 +24,11 @@ export function createRuleTester<RuleOptions = any, MessageId extends string = s
     ...toArray(options.configs)
       .map(c => c.languageOptions)
       .filter(<T>(c: T | undefined): c is T => c !== undefined),
-  ) as Linter.Config['languageOptions']
+  ) as Linter.LanguageOptions
 
   const linter = new Linter({
     configType: 'flat',
-    cwd: isUsingTypeScriptParser(options.languageOptions)
+    cwd: isUsingTypeScriptParser(languageOptions)
       ? languageOptions?.parserOptions?.tsconfigRootDir
       : undefined,
   })
