@@ -1,3 +1,4 @@
+import type { TestCasesOptions } from '../../src'
 import * as tsParser from '@typescript-eslint/parser'
 import { expect } from 'vitest'
 import { run } from '../../src'
@@ -23,34 +24,40 @@ const valids = [
   'const foo = async (x, y) => x + y',
   'const foo = () => String(123)',
   'const foo = () => ({})',
-]
+] satisfies TestCasesOptions['valid']
 
 const invalids = [
-  [
-    'const foo = (x, y) => \nx + y',
-    'function foo (x, y) {\n  return x + y\n}',
-  ],
-  [
-    'const foo = (as: string, bar: number) => { return as + bar }',
-    'function foo (as: string, bar: number) { return as + bar }',
-  ],
-  [
-    'const foo = <K, T extends Boolean>(as: string, bar: number): Omit<T, K> => \nas + bar',
-    'function foo <K, T extends Boolean>(as: string, bar: number): Omit<T, K> {\n  return as + bar\n}',
-  ],
-  [
-    'export const foo = () => {}',
-    'export function foo () {}',
-  ],
-  [
-    'export const foo = () => \n({})',
-    'export function foo () {\n  return {}\n}',
-  ],
-  [
-    'export const foo = async () => \n({})',
-    'export async function foo () {\n  return {}\n}',
-  ],
-]
+  {
+    code: 'const foo = (x, y) => \nx + y',
+    output: 'function foo (x, y) {\n  return x + y\n}',
+    errors: [{ messageId: 'topLevelFunctionDeclaration' }],
+  },
+  {
+    code: 'const foo = (as: string, bar: number) => { return as + bar }',
+    output: 'function foo (as: string, bar: number) { return as + bar }',
+    errors: [{ messageId: 'topLevelFunctionDeclaration' }],
+  },
+  {
+    code: 'const foo = <K, T extends Boolean>(as: string, bar: number): Omit<T, K> => \nas + bar',
+    output: 'function foo <K, T extends Boolean>(as: string, bar: number): Omit<T, K> {\n  return as + bar\n}',
+    errors: [{ messageId: 'topLevelFunctionDeclaration' }],
+  },
+  {
+    code: 'export const foo = () => {}',
+    output: 'export function foo () {}',
+    errors: [{ messageId: 'topLevelFunctionDeclaration' }],
+  },
+  {
+    code: 'export const foo = () => \n({})',
+    output: 'export function foo () {\n  return {}\n}',
+    errors: [{ messageId: 'topLevelFunctionDeclaration' }],
+  },
+  {
+    code: 'export const foo = async () => \n({})',
+    output: 'export async function foo () {\n  return {}\n}',
+    errors: [{ messageId: 'topLevelFunctionDeclaration' }],
+  },
+] satisfies TestCasesOptions['invalid']
 
 run({
   name: RULE_NAME,
@@ -60,11 +67,7 @@ run({
   },
 
   valid: valids,
-  invalid: invalids.map(i => ({
-    code: i[0],
-    output: i[1],
-    errors: [{ messageId: 'topLevelFunctionDeclaration' }],
-  })),
+  invalid: invalids,
 
   onResult(_case, result) {
     if (_case.type === 'invalid')
