@@ -1,3 +1,7 @@
+ignoreWorkspaceRootCheck: true
+shellEmulator: true
+trustPolicy: no-downgrade
+
 packages:
   - playground
   - docs
@@ -6,6 +10,3 @@ packages:
 onlyBuiltDependencies:
   - esbuild
   - simple-git-hooks
-
-ignoreWorkspaceRootCheck: true
-shellEmulator: true
