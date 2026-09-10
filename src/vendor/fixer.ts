@@ -108,8 +108,8 @@ export function applyFixes(
 }
 
 function hasOwnProperty<K extends string>(
-  obj: unknown,
+  obj: object,
   prop: K,
 ): obj is Record<K, unknown> {
-  return Object.prototype.hasOwnProperty.call(obj, prop)
+  return Object.hasOwn(obj, prop)
 }
